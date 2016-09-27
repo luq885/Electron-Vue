@@ -22,13 +22,13 @@ const sources = {
 };
 
 gulp.task('package-mac', ['set-prod-node-env', 'build'], () => {
-    const packageJson = require('./builds/dist/package.json');
+    const packageJson = require('./build/dist/package.json');
     gulp.src('')
         .pipe(electron({
-            src: 'builds/dist',
+            src: 'build/dist',
             packageJson: packageJson,
-            release: 'builds/release',
-            cache: 'builds/cache',
+            release: 'build/Release',
+            cache: 'build/cache',
             version: 'v1.4.1',
             rebuild: false,
             packaging: false,
@@ -48,13 +48,13 @@ gulp.task('package-mac', ['set-prod-node-env', 'build'], () => {
 });
 
 gulp.task('package-win', ['set-prod-node-env', 'build'], () => {
-    const packageJson = require('./builds/dist/package.json');
+    const packageJson = require('./build/dist/package.json');
     gulp.src('')
         .pipe(electron({
-            src: 'builds/dist',
+            src: 'build/dist',
             packageJson: packageJson,
-            release: 'builds/release',
-            cache: 'builds/cache',
+            release: 'build/Release',
+            cache: 'build/cache',
             version: 'v1.4.1',
             rebuild: false,
             packaging: false,
@@ -73,7 +73,7 @@ gulp.task('package-win', ['set-prod-node-env', 'build'], () => {
 });
 
 gulp.task('clean',()=>{
-    del.sync(['builds/dist/**', 'builds/release/**']);
+    del.sync(['build/dist/**', 'build/Release/**']);
 });
 
 
@@ -90,7 +90,7 @@ gulp.task('run-dev', ['set-dev-node-env'], () => {
 });
 
 gulp.task('run-prod', ['set-prod-node-env', 'build'], () => {
-    run('./node_modules/.bin/electron ./builds/dist/').exec();
+    run('./node_modules/.bin/electron ./build/dist/').exec();
 });
 
 gulp.task('prepare-main', () => {
@@ -99,38 +99,38 @@ gulp.task('prepare-main', () => {
             presets: ['es2015']
         }))
         .pipe(uglify())
-        .pipe(gulp.dest('builds/dist/'));
+        .pipe(gulp.dest('build/dist/'));
 });
 
 gulp.task('prepare-image', () => {
     gulp.src(sources.image)
-        .pipe(gulp.dest('builds/dist/images/'));
+        .pipe(gulp.dest('build/dist/images/'));
 });
 
 gulp.task('prepare-css', () => {
     gulp.src(sources.css)
         .pipe(cleanCSS())
-        .pipe(gulp.dest('builds/dist/css/'));
+        .pipe(gulp.dest('build/dist/css/'));
     gulp.src(sources.fonts)
-        .pipe(gulp.dest('builds/dist/fonts/'));
+        .pipe(gulp.dest('build/dist/fonts/'));
 });
 
 gulp.task('prepare-html', () => {
     gulp.src(sources.index)
         .pipe(replace('<script>require(\'./src/index\')</script>', '<script src="./bundle.js"></script>'))
         .pipe(htmlmin({ collapseWhitespace: true }))
-        .pipe(gulp.dest('builds/dist/'));
+        .pipe(gulp.dest('build/dist/'));
 });
 
 gulp.task('prepare-package', () => {
     gulp.src(sources.package)
-        .pipe(gulp.dest('builds/dist/'));
+        .pipe(gulp.dest('build/dist/'));
 });
 
 gulp.task('webpack', () => {
     return gulp.src('src/index.js')
         .pipe(webpack(require('./webpack.config.js')))
-        .pipe(gulp.dest('builds/dist/'));
+        .pipe(gulp.dest('build/dist/'));
 });
 
 gulp.task('update-version', () => {
