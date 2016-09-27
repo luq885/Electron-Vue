@@ -5,9 +5,6 @@ const App = require('./componets/App');
 const routerConfig = require('./routers');
 const del = require('del');
 
-console.log(__dirname);
-del.sync(__dirname + '/test/**');
-
 Vue.use(VueRouter);
 
 let router = new VueRouter();

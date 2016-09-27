@@ -1,4 +1,4 @@
-let Bar = {
+const Bar = {
     template: '<p>This is bar!</p>'
 };
 
