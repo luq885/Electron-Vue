@@ -1,0 +1,35 @@
+{
+  "name": "electronvue",
+  "version": "0.0.1",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.14.0",
+    "electron": "^1.3.4",
+    "electron-prebuilt": "^1.4.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-clean-css": "^2.0.12",
+    "gulp-electron": "^0.1.3",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-replace": "^0.5.4",
+    "gulp-run": "^1.7.1",
+    "gulp-uglify": "^2.0.0",
+    "gulp-webpack": "^1.5.0",
+    "webpack": "^1.13.2"
+  },
+  "dependencies": {
+    "del": "^2.2.2",
+    "vue": "^1.0.27",
+    "vue-resource": "^1.0.3",
+    "vue-router": "^0.7.13",
+    "vuex": "^0.8.2"
+  }
+}

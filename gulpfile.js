@@ -1,0 +1,149 @@
+'use strict';
+const gulp = require('gulp');
+const webpack = require('gulp-webpack');
+const replace = require('gulp-replace');
+const babel = require('gulp-babel');
+const uglify = require('gulp-uglify');
+const htmlmin = require('gulp-htmlmin');
+const run = require('gulp-run');
+const electron = require('gulp-electron');
+const cleanCSS = require('gulp-clean-css');
+const fs = require('fs');
+const del = require('del');
+
+const sources = {
+    index: './index.html',
+    package: './package.json',
+    css: './css/*.css',
+    image: './images/*.*',
+    icon: './icons/*.*',
+    main: './main.js',
+    fonts: './fonts/*.*',
+};
+
+gulp.task('package-mac', ['set-prod-node-env', 'build'], () => {
+    const packageJson = require('./builds/dist/package.json');
+    gulp.src('')
+        .pipe(electron({
+            src: 'builds/dist',
+            packageJson: packageJson,
+            release: 'builds/release',
+            cache: 'builds/cache',
+            version: 'v1.4.1',
+            rebuild: false,
+            packaging: false,
+            asar: true,
+            platforms: ['darwin-x64'],
+            platformResources: {
+                darwin: {
+                    CFBundleDisplayName: packageJson.name,
+                    CFBundleIdentifier: packageJson.name,
+                    CFBundleName: packageJson.name,
+                    CFBundleVersion: packageJson.version,
+                    icon: './icons/icon.icns'
+                },
+            }
+        }))
+        .pipe(gulp.dest(''));
+});
+
+gulp.task('package-win', ['set-prod-node-env', 'build'], () => {
+    const packageJson = require('./builds/dist/package.json');
+    gulp.src('')
+        .pipe(electron({
+            src: 'builds/dist',
+            packageJson: packageJson,
+            release: 'builds/release',
+            cache: 'builds/cache',
+            version: 'v1.4.1',
+            rebuild: false,
+            packaging: false,
+            asar: true,
+            platforms: ['win32-ia32'],
+            platformResources: {
+                darwin: {
+                    'version-string': packageJson.version,
+                    'file-version': packageJson.version,
+                    'product-version': packageJson.version,
+                    'icon': './icons/icon.ico'
+                },
+            }
+        }))
+        .pipe(gulp.dest(''));
+});
+
+gulp.task('clean',()=>{
+    del.sync(['builds/dist/**', 'builds/release/**']);
+});
+
+
+gulp.task('set-dev-node-env', () => {
+    return process.env.NODE_ENV = 'development';
+});
+
+gulp.task('set-prod-node-env', () => {
+    return process.env.NODE_ENV = 'production';
+});
+
+gulp.task('run-dev', ['set-dev-node-env'], () => {
+    run('./node_modules/.bin/electron .').exec();
+});
+
+gulp.task('run-prod', ['set-prod-node-env', 'build'], () => {
+    run('./node_modules/.bin/electron ./builds/dist/').exec();
+});
+
+gulp.task('prepare-main', () => {
+    gulp.src(sources.main)
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+        .pipe(uglify())
+        .pipe(gulp.dest('builds/dist/'));
+});
+
+gulp.task('prepare-image', () => {
+    gulp.src(sources.image)
+        .pipe(gulp.dest('builds/dist/images/'));
+});
+
+gulp.task('prepare-css', () => {
+    gulp.src(sources.css)
+        .pipe(cleanCSS())
+        .pipe(gulp.dest('builds/dist/css/'));
+    gulp.src(sources.fonts)
+        .pipe(gulp.dest('builds/dist/fonts/'));
+});
+
+gulp.task('prepare-html', () => {
+    gulp.src(sources.index)
+        .pipe(replace('<script>require(\'./src/index\')</script>', '<script src="./bundle.js"></script>'))
+        .pipe(htmlmin({ collapseWhitespace: true }))
+        .pipe(gulp.dest('builds/dist/'));
+});
+
+gulp.task('prepare-package', () => {
+    gulp.src(sources.package)
+        .pipe(gulp.dest('builds/dist/'));
+});
+
+gulp.task('webpack', () => {
+    return gulp.src('src/index.js')
+        .pipe(webpack(require('./webpack.config.js')))
+        .pipe(gulp.dest('builds/dist/'));
+});
+
+gulp.task('update-version', () => {
+    let fileContent = fs.readFileSync(sources.package, 'utf8');
+    let reg = /"version": "(\d.\d.\d)",/g;
+    let mathes = reg.exec(fileContent);
+    let ver = parseInt(mathes[1].replace(/\./g, '')) + 1;
+    let verNumber = Array(3 > ('' + ver).length ? (3 - ('' + ver).length + 1) : 0).join(0) + ver;
+    let newVer = mathes[0].replace(mathes[1], verNumber[0] + '.' + verNumber[1] + '.' + verNumber.substr(2, verNumber.length - 1));
+    gulp.src(sources.package)
+        .pipe(replace(mathes[0], newVer))
+        .pipe(gulp.dest('./bulids/dist/'))
+        .pipe(gulp.dest('./'));
+});
+
+gulp.task('build', ['webpack', 'prepare-css', 'prepare-main', 'prepare-image', 'prepare-html', 'prepare-package']);
