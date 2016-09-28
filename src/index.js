@@ -3,7 +3,6 @@ const VueRouter = require('vue-router');
 
 const App = require('./componets/App');
 const routerConfig = require('./routers');
-const del = require('del');
 
 Vue.use(VueRouter);
 
