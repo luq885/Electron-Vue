@@ -14,37 +14,21 @@ const del = require('del');
 const sources = {
     index: './index.html',
     package: './package.json',
-    css: './css/*.css',
-    image: './images/*.*',
+    css: './assets/css/*.css',
+    image: './assets/images/*.*',
     icon: './icons/*.*',
     main: './main.js',
-    fonts: './fonts/*.*',
+    fonts: './assets/fonts/*.*',
 };
 
 gulp.task('package-mac', ['set-prod-node-env', 'build'], () => {
-    const packageJson = require('./build/dist/package.json');
-    gulp.src('')
-        .pipe(electron({
-            src: 'build/dist',
-            packageJson: packageJson,
-            release: 'build/Release',
-            cache: 'build/cache',
-            version: 'v1.4.1',
-            rebuild: false,
-            packaging: false,
-            asar: true,
-            platforms: ['darwin-x64'],
-            platformResources: {
-                darwin: {
-                    CFBundleDisplayName: packageJson.name,
-                    CFBundleIdentifier: packageJson.name,
-                    CFBundleName: packageJson.name,
-                    CFBundleVersion: packageJson.version,
-                    icon: './icons/icon.icns'
-                },
-            }
-        }))
-        .pipe(gulp.dest(''));
+    run('./node_modules/.bin/electron-packager ./build/dist/ $npm_package_productName --out=./build/Release --overwrite --prune --asar --arch=all --platform=darwin --icon=./assets/icons/icon.icns --version=$npm_package_electronVersion --app-version=$npm_package_version').exec();
+});
+
+gulp.task('makesetup-mac', ['package-mac'], () => {
+    setTimeout(() => {
+        run('hdiutil create -format UDZO -srcfolder ./build/Release/Electronvue-darwin-x64/electronvue.app /Volumes/RamDisk/electronvue.dmg').exec();
+    },2000);
 });
 
 gulp.task('package-win', ['set-prod-node-env', 'build'], () => {
@@ -72,8 +56,8 @@ gulp.task('package-win', ['set-prod-node-env', 'build'], () => {
         .pipe(gulp.dest(''));
 });
 
-gulp.task('clean',()=>{
-    del.sync(['build/dist/**', 'build/Release/**']);
+gulp.task('clean', () => {
+    del.sync(['build/dist/**', 'build/Release/**', 'build/setup/**']);
 });
 
 
@@ -104,15 +88,15 @@ gulp.task('prepare-main', () => {
 
 gulp.task('prepare-image', () => {
     gulp.src(sources.image)
-        .pipe(gulp.dest('build/dist/images/'));
+        .pipe(gulp.dest('build/dist/assets/images/'));
 });
 
 gulp.task('prepare-css', () => {
     gulp.src(sources.css)
         .pipe(cleanCSS())
-        .pipe(gulp.dest('build/dist/css/'));
+        .pipe(gulp.dest('build/dist/assets/css/'));
     gulp.src(sources.fonts)
-        .pipe(gulp.dest('build/dist/fonts/'));
+        .pipe(gulp.dest('build/dist/assets/fonts/'));
 });
 
 gulp.task('prepare-html', () => {

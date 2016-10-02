@@ -1,4 +1,5 @@
 const actions = require('../vuex/actions');
+const {ipcRenderer} = require('electron');
 
 const Increment = {
     template: `  
@@ -22,6 +23,12 @@ const Increment = {
     ready: function () {
         this.setUserName('Mike');
         this.setUserAge('100');
+        ipcRenderer.on('asynchronous-reply', (event, arg) => {
+            // Increment.methods.increment(100);
+            // Increment.methods.setHide.call(Increment);
+            this.increment(100);
+            console.log(arg); // prints "pong"
+        });
     }
 };
 

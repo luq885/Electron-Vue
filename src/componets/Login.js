@@ -3,7 +3,7 @@ const Bar = require('./Bar');
 
 module.exports = {
     template: `<div>
-    <img src="./images/logo.png" width=100 /><br />
+    <img src="./assets/images/logo.png" width=100 /><br />
         name:<input type="text" v-model="username" /><br />
         password:<input v-model="password" type="password" /><br />
         <button @click="login()">login</button>{{username}}

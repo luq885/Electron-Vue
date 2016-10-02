@@ -1,6 +1,7 @@
 const electron = require('electron');
 // Module to control application life.
 const app = electron.app;
+var Accelerators = electron.Accelerators;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -12,7 +13,6 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({ width: 1280, height: 800 });
 
-    BrowserWindow.addDevToolsExtension('/Volumes/SSD/Users/liuqiang/Library/Application\ Support/Google/Chrome/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/2.1.2_0/');
     // ~/Library/Application\ Support/Google/Chrome/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/2.1.2_0/
 
     // and load the index.html of the app.
@@ -20,8 +20,15 @@ function createWindow() {
 
     // Open the DevTools.
     if (process.env.NODE_ENV === 'development') {
+        BrowserWindow.addDevToolsExtension('/Volumes/SSD/Users/liuqiang/Library/Application\ Support/Google/Chrome/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/2.1.2_0/');
+
         mainWindow.webContents.openDevTools();
+        Accelerators.register('CommandOrControl+Alt+I', () => {
+            mainWindow.webContents.openDevTools();
+        });
     }
+
+
 
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
@@ -45,6 +52,10 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+app.on('will-quit', () => {
+    globalShortcut.unregisterAll();
 });
 
 app.on('activate', () => {

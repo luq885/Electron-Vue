@@ -2,13 +2,11 @@ const Vue = require('vue');
 const VueRouter = require('vue-router');
 
 const App = require('./componets/App');
-const routerConfig = require('./routers');
 
 Vue.use(VueRouter);
 
-let router = new VueRouter();
+const router = require('./router');
 
-router.map(routerConfig);
 
 router.redirect({
     '*': '/login'
