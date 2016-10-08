@@ -1,7 +1,10 @@
+const Vue = require('vue');
 const VueRouter = require('vue-router');
 const Foo = require('./componets/Foo');
 const Bar = require('./componets/Bar');
 const Login = require('./componets/Login');
+
+Vue.use(VueRouter);
 
 const config = {
     '/foo': {
