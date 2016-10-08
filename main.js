@@ -1,7 +1,7 @@
 const electron = require('electron');
 // Module to control application life.
 const app = electron.app;
-var Accelerators = electron.Accelerators;
+var globalShortcut = electron.globalShortcut;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow;
 
@@ -23,8 +23,8 @@ function createWindow() {
         BrowserWindow.addDevToolsExtension('/Volumes/SSD/Users/liuqiang/Library/Application\ Support/Google/Chrome/Default/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/2.1.2_0/');
 
         mainWindow.webContents.openDevTools();
-        Accelerators.register('CommandOrControl+Alt+I', () => {
-            mainWindow.webContents.openDevTools();
+        globalShortcut.register('CommandOrControl+Alt+I', () => {
+            mainWindow.webContents.toggleDevTools();
         });
     }
 
